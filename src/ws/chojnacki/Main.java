@@ -40,29 +40,31 @@ public class Main {
         System.err.println("");
     }
 
-    int process(List<Integer> procs, int[] originalCpus, int iProc, int iCpu) {
-        if (iProc != IGNORE && iCpu != IGNORE) {
-            originalCpus[iCpu] += procs.remove(iProc);
-        }
+    int process(List<Integer> procs, int[] originalCpus, int iCpu, int procVal) {
+        int rv;
+        originalCpus[iCpu] += procVal;
+
         int mTime = NOT_SET, tTime;
-        if (procs.size() == 0) {
-            return maxTime(originalCpus);
+        if (procs.isEmpty()) {
+            rv = maxTime(originalCpus);
         } else {
             int nProc = procs.size();
 
-            for (int cpuNumber = 0; cpuNumber < originalCpus.length; cpuNumber++) {
-                for (int procNumber = 0; procNumber < nProc; procNumber++) {
-                    int[] cpus = originalCpus.clone();
-                    List<Integer> tProcs = new ArrayList<Integer>(procs);
-                    Collections.copy(tProcs, procs);
-                    tTime = process(tProcs, cpus, procNumber, cpuNumber);
+            for (int procNumber = 0; procNumber < nProc; procNumber++) {
+                int tProcVal = procs.remove(procNumber);
+
+                for (int cpuNumber = 0; cpuNumber < originalCpus.length; cpuNumber++) {
+                    tTime = process(procs, originalCpus, cpuNumber, tProcVal);
                     if (tTime > 0 && (mTime == NOT_SET || tTime < mTime)) {
                         mTime = tTime;
                     }
                 }
+                procs.add(procNumber, tProcVal);
             }
-            return mTime;
+            rv = mTime;
         }
+        originalCpus[iCpu] -= procVal;
+        return rv;
     }
 
     public static void main(String[] args) {
@@ -71,7 +73,7 @@ public class Main {
 //        |5 4 3
 //        |5 4 3
         Main m = new Main();
-        int x = m.process(m.initProcs(procs), m.initCpus(3), IGNORE, IGNORE);
+        int x = m.process(m.initProcs(procs), m.initCpus(3), 0, 0);
         System.err.println(x);
     }
 }
