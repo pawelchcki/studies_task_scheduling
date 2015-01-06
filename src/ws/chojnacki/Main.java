@@ -1,6 +1,7 @@
 package ws.chojnacki;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
@@ -12,7 +13,7 @@ public class Main {
     }
 
     List<Integer> initProcs(int[] procs) {
-        List<Integer> rv = new ArrayList<Integer>(procs.length);
+        List<Integer> rv = new LinkedList<Integer>();
         for (int proc : procs) {
             rv.add(proc);
         }
@@ -35,6 +36,10 @@ public class Main {
         }
         System.err.println("");
     }
+
+//    int multiProcess(List<Integer> procs, int[] originalCpus){
+//        List<Integer> procs = new Arra
+//    }
 
     int process(List<Integer> procs, int[] originalCpus, int iCpu, int procVal, int mTime) {
         int rv;
@@ -62,7 +67,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] procs = {5, 5, 4, 4, 3, 3, 3};
+        int[] procs = {5, 5, 4, 4, 3, 3, 3,1};
 //        |5 4 3 3
 //        |5 4 3
 //        |5 4 3
