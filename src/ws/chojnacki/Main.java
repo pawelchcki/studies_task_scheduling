@@ -1,7 +1,6 @@
 package ws.chojnacki;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Main {
@@ -40,24 +39,22 @@ public class Main {
         System.err.println("");
     }
 
-    int process(List<Integer> procs, int[] originalCpus, int iCpu, int procVal) {
+    int process(List<Integer> procs, int[] originalCpus, int iCpu, int procVal, int mTime) {
         int rv;
         originalCpus[iCpu] += procVal;
 
-        int mTime = NOT_SET, tTime;
         if (procs.isEmpty()) {
             rv = maxTime(originalCpus);
+            if (mTime != NOT_SET && rv > mTime) {
+                rv = mTime;
+            }
         } else {
             int nProc = procs.size();
-
             for (int procNumber = 0; procNumber < nProc; procNumber++) {
                 int tProcVal = procs.remove(procNumber);
 
                 for (int cpuNumber = 0; cpuNumber < originalCpus.length; cpuNumber++) {
-                    tTime = process(procs, originalCpus, cpuNumber, tProcVal);
-                    if (tTime > 0 && (mTime == NOT_SET || tTime < mTime)) {
-                        mTime = tTime;
-                    }
+                    mTime = process(procs, originalCpus, cpuNumber, tProcVal, mTime);
                 }
                 procs.add(procNumber, tProcVal);
             }
@@ -68,12 +65,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] procs = {5, 5, 4, 4, 3, 3, 3, 1};
+        int[] procs = {5, 5, 4, 4, 3, 3, 3};
 //        |5 4 3 3
 //        |5 4 3
 //        |5 4 3
         Main m = new Main();
-        int x = m.process(m.initProcs(procs), m.initCpus(3), 0, 0);
+        int x = m.process(m.initProcs(procs), m.initCpus(3), 0, 0, NOT_SET);
         System.err.println(x);
     }
 }
