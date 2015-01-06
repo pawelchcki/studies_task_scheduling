@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    int nCpu = 3;
-    int[] procs;
     public static final int NOT_SET = -1;
-    public static final int IGNORE = -1;
 
     int[] initCpus(int num) {
         int[] rv = new int[num];
