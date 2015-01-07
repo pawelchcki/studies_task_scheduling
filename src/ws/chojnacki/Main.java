@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 public class Main {
@@ -40,26 +39,35 @@ public class Main {
         System.err.println("");
     }
 
-    int multiProcess(List<Integer> procs, int[] originalCpus){
+    List<Integer> copyProcs(List<Integer> list){
+        List<Integer> nuProc = new LinkedList<>(list);
+        Collections.copy(nuProc, list);
+        return nuProc;
+    }
+
+    int[] copyCpus(int[] cpus) {
+        return cpus.clone();
+    }
+
+    int multiProcess(List<Integer> procs, int[] originalCpus) {
         List<Integer> rvList = Collections.synchronizedList(new ArrayList<>());
         Function<Integer, Runnable> r = (Integer numProc) -> () -> {
-            List<Integer> nuProc = new LinkedList<>(procs);
-            Collections.copy(nuProc, procs);
-            int[] nuCpus = originalCpus.clone();
+            List<Integer> nuProc = copyProcs(procs);
+            int[] nuCpus = copyCpus(originalCpus);
             int procVal = nuProc.remove(numProc.intValue());
             int mTime = NOT_SET;
-            for (int i=0; i<originalCpus.length; i++){
+            for (int i = 0; i < originalCpus.length; i++) {
                 mTime = process(nuProc, nuCpus, i, procVal, mTime);
             }
             rvList.add(mTime);
         };
         List<Thread> threads = new LinkedList<>();
-        for(int i=0; i< procs.size(); i++){
+        for (int i = 0; i < procs.size(); i++) {
             Thread th = new Thread(r.apply(i));
             threads.add(th);
             th.start();
         }
-        for (Thread th: threads) {
+        for (Thread th : threads) {
             try {
                 th.join();
             } catch (InterruptedException e) {
@@ -94,12 +102,45 @@ public class Main {
         return rv;
     }
 
-    public static void main(String[] args) {
-        int[] procs = {5, 5, 4, 4, 3, 3, 3, 1, 2};
-        Main m = new Main();
-//        int x = m.process(m.initProcs(procs), m.initCpus(3), 0, 0, NOT_SET);
-        int x = m.multiProcess(m.initProcs(procs), m.initCpus(3));
+    int findLowestUsedCpu(int[] cpus) {
+        int low_i = 0;
+        for (int i = 0; i < cpus.length; i++) {
+            if (cpus[i] <= cpus[low_i]) {
+                low_i = i;
+            }
+        }
+        return low_i;
+    }
 
-        System.err.println(x);
+    int greedyProcess(List<Integer> procs, int[] originalCpus) {
+        procs = copyProcs(procs);
+        originalCpus = copyCpus(originalCpus);
+
+        for (Integer proc : procs) {
+            int i = findLowestUsedCpu(originalCpus);
+            originalCpus[i] += proc;
+        }
+        return maxTime(originalCpus);
+    }
+
+    int lptProcess(List<Integer> procs, int[] originalCpus) {
+        procs = copyProcs(procs);
+        originalCpus = copyCpus(originalCpus);
+        Collections.sort(procs, Collections.reverseOrder());
+
+        return greedyProcess(procs, originalCpus);
+    }
+
+    public static void main(String[] args) {
+        int[] procs = {5, 5, 4, 4, 3, 3, 6, 2};
+        Main m = new Main();
+        List<Integer> lprocs = m.initProcs(procs);
+        int [] cpus = m.initCpus(3);
+        int x = m.process(m.initProcs(procs), m.initCpus(3), 0, 0, NOT_SET);
+//        System.err.println(m.multiProcess(lprocs, cpus));
+        System.err.println(m.greedyProcess(lprocs, cpus));
+        System.err.println(m.lptProcess(lprocs, cpus));
+
+//        System.err.println(x);
     }
 }
