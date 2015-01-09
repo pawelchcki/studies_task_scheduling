@@ -34,6 +34,6 @@ public abstract class Processor {
         Stopwatch timer = Stopwatch.createStarted();
         Integer result = process(processes, nCpus);
         timer.stop();
-        System.out.println(String.format("%d,%d,%d,%d", nCpus, size, result, timer.elapsed(TimeUnit.MICROSECONDS)));
+        System.out.println(String.format("\"%s\",%d,%d,%d,%d", this.getClass().getSimpleName(), nCpus, size, result, timer.elapsed(TimeUnit.MICROSECONDS)));
     }
 }

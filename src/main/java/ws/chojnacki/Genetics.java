@@ -54,13 +54,13 @@ public class Genetics extends Processor {
 
         final Engine<EnumGene<Integer>, Double> engine = Engine
                 .builder(ff, PermutationChromosome.ofInteger(nItems * nCpus))
-                .populationSize(100)
+                .populationSize(500)
                 .optimize(Optimize.MINIMUM)
-                .survivorsSelector(new TournamentSelector<>(5))
+                .survivorsSelector(new TournamentSelector<>(10))
                 .offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
-                        new Mutator<>(0.115),
-                        new SinglePointCrossover<>(0.16))
+                        new Mutator<>(0.215),
+                        new SinglePointCrossover<>(0.26))
                 .build();
 
         final EvolutionStatistics<Double, ?>
@@ -68,7 +68,7 @@ public class Genetics extends Processor {
 
         final Phenotype<EnumGene<Integer>, Double> best = engine.stream()
                 .limit(bySteadyFitness(7))
-                .limit(100)
+                .limit(200)
                 .peek(statistics)
                 .collect(toBestPhenotype());
 
