@@ -1,15 +1,16 @@
 plugins {
-  id 'java' // or 'groovy' Must be explicitly applied
-  id 'com.github.johnrengelman.shadow' version '1.2.0'
+    id 'java' // or 'groovy' Must be explicitly applied
+    id 'com.github.johnrengelman.shadow' version '1.2.0'
 }
 repositories {
     mavenCentral()
 }
- 
+
 dependencies {
     compile 'org.bitbucket.fwilhelm:org.jenetics:3.0.0'
+    compile 'com.google.guava:guava:18.0'
 }
- 
+
 jar {
     manifest {
         attributes 'Main-Class': 'blog.shadow.HelloWorld'

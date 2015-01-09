@@ -1,5 +1,6 @@
 package ws.chojnacki;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Exhaustive extends Processor {
@@ -10,6 +11,7 @@ public class Exhaustive extends Processor {
 
     protected int internalProcess(List<Integer> procs, int[] originalCpus, int iCpu, int procVal, int mTime) {
         int rv;
+        procs = new LinkedList<>(procs);
         originalCpus[iCpu] += procVal;
 
         if (procs.isEmpty()) {

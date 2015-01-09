@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ExhaustiveThreaded extends Exhaustive{
+public class ExhaustiveThreaded extends Exhaustive {
     Integer process(List<Integer> procs, int numCpus) {
         List<Integer> rvList = Collections.synchronizedList(new ArrayList<>());
         Function<Integer, Runnable> r = (Integer numProc) -> () -> {

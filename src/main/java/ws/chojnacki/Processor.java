@@ -6,7 +6,8 @@ import java.util.List;
 
 
 public abstract class Processor {
-    static final int NOT_SET=-1;
+    static final int NOT_SET = -1;
+
     static int maxTime(int[] pCpus) {
         int max = NOT_SET;
         for (int cpu : pCpus) {
@@ -16,7 +17,8 @@ public abstract class Processor {
         }
         return max;
     }
-    protected  List<Integer> copyProcs(List<Integer> list){
+
+    protected List<Integer> copyProcs(List<Integer> list) {
         List<Integer> nuProc = new LinkedList<>(list);
         Collections.copy(nuProc, list);
         return nuProc;
