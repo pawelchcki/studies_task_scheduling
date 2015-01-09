@@ -8,62 +8,39 @@ import org.jenetics.util.RandomRegistry;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static org.jenetics.engine.EvolutionResult.toBestPhenotype;
 import static org.jenetics.engine.limit.bySteadyFitness;
 
-class Item {
-    public final double size;
-    public final double value;
+final class FF implements Function<Genotype<EnumGene<Integer>>, Double> {
+    private final int[] items;
+    private final int nCpu;
 
-    Item(final double size, final double value) {
-        this.size = size;
-        this.value = value;
-    }
-
-    // Create a new random knapsack item.
-    static Item random() {
-        final Random r = RandomRegistry.getRandom();
-        return new Item(r.nextDouble() * 100, r.nextDouble() * 100);
-    }
-
-    // Create a new collector for summing up the knapsack items.
-    static Collector<Item, ?, Item> toSum() {
-        return Collector.of(
-                () -> new double[2],
-                (a, b) -> {
-                    a[0] += b.size;
-                    a[1] += b.value;
-                },
-                (a, b) -> {
-                    a[0] += b[0];
-                    a[1] += b[1];
-                    return a;
-                },
-                r -> new Item(r[0], r[1])
-        );
-    }
-}
-
-// The knapsack fitness function class, which is parametrized with
-// the available items and the size of the knapsack.
-final class FF implements Function<Genotype<BitGene>, Double> {
-    private final Item[] items;
-    private final double size;
-
-    public FF(final Item[] items, final double size) {
+    public FF(final int[] items, final int nCpu) {
         this.items = items;
-        this.size = size;
+        this.nCpu = nCpu;
     }
 
     @Override
-    public Double apply(final Genotype<BitGene> gt) {
-        final Item sum = ((BitChromosome) gt.getChromosome()).ones()
-                .mapToObj(i -> items[i])
-                .collect(Item.toSum());
+    public Double apply(final Genotype<EnumGene<Integer>> gt) {
+        int cnt = 0;
+        int[] results = new int[nCpu];
+        int iCpu = 0;
 
-        return sum.size <= this.size ? sum.value : 0;
+        for (EnumGene<Integer> gene : gt.getChromosome().toSeq()) {
+            if (cnt >= items.length) {
+                iCpu++;
+                cnt = 0;
+            }
+            int i = gene.getAllele().intValue();
+            if (i < items.length) {
+                results[iCpu] += items[i];
+            }
+            cnt++;
+
+        }
+        int maxTime = Main.maxTime(results);
+        return (double)(maxTime);
     }
 }
 
@@ -71,20 +48,21 @@ final class FF implements Function<Genotype<BitGene>, Double> {
 public class Genetics {
 
     public static void main(final String[] args) {
-        final int nitems = 15;
-        final double kssize = nitems * 100.0 / 3.0;
+        final int ncpus = 3;
+
+        int[] procs = {5, 5, 4, 4, 3, 3, 3};
+        int nitems = procs.length;
 
         final FF ff = new FF(
-                Stream.generate(Item::random)
-                        .limit(nitems)
-                        .toArray(Item[]::new),
-                kssize
+                procs,
+                ncpus
         );
 
         // Configure and build the evolution engine.
-        final Engine<BitGene, Double> engine = Engine
-                .builder(ff, BitChromosome.of(nitems, 0.5))
-                .populationSize(500)
+        final Engine<EnumGene<Integer>, Double> engine = Engine
+                .builder(ff, PermutationChromosome.ofInteger(nitems * ncpus))
+                .populationSize(100)
+                .optimize(Optimize.MINIMUM)
                 .survivorsSelector(new TournamentSelector<>(5))
                 .offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
@@ -96,10 +74,10 @@ public class Genetics {
         final EvolutionStatistics<Double, ?>
                 statistics = EvolutionStatistics.ofNumber();
 
-        final Phenotype<BitGene, Double> best = engine.stream()
+        final Phenotype<EnumGene<Integer>, Double> best = engine.stream()
                 // Truncate the evolution stream after 7 "steady"
                 // generations.
-                .limit(bySteadyFitness(100))
+                .limit(bySteadyFitness(7))
                         // The evolution will stop after maximal 100
                         // generations.
                 .limit(100)
@@ -110,7 +88,8 @@ public class Genetics {
                         // its best phenotype.
                 .collect(toBestPhenotype());
 
-        System.out.println(statistics);
-        System.out.println(best);
+//        System.out.println(statistics);
+//        System.out.println(best);
+        System.err.println(best.getFitness().intValue());
     }
 }

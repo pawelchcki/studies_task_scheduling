@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+
 public class Main {
     public static final int NOT_SET = -1;
 
@@ -22,7 +23,7 @@ public class Main {
         return rv;
     }
 
-    int maxTime(int[] pCpus) {
+    static int maxTime(int[] pCpus) {
         int max = NOT_SET;
         for (int cpu : pCpus) {
             if (cpu > max) {
@@ -32,7 +33,7 @@ public class Main {
         return max;
     }
 
-    void dispCpus(int[] cpus) {
+    static void dispCpus(int[] cpus) {
         for (int cpu : cpus) {
             System.err.print(cpu + " ");
         }
