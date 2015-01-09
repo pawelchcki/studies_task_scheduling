@@ -15,13 +15,13 @@ public class Greedy extends Processor {
 
     Integer process(List<Integer> procs, int numCpus) {
         procs = copyProcs(procs);
-        int[] originalCpus = new int[numCpus];
+        int[] cpus = new int[numCpus];
 
         for (Integer proc : procs) {
-            int i = findLowestUsedCpu(originalCpus);
-            originalCpus[i] += proc;
+            int i = findLowestUsedCpu(cpus);
+            cpus[i] += proc;
         }
-        return maxTime(originalCpus);
+        return maxTime(cpus);
     }
 
 }

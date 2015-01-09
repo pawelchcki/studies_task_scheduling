@@ -9,13 +9,13 @@ public class Exhaustive extends Processor {
         return internalProcess(processes, new int[nCpus], 0, 0, NOT_SET);
     }
 
-    protected int internalProcess(List<Integer> procs, int[] originalCpus, int iCpu, int procVal, int mTime) {
+    protected int internalProcess(List<Integer> procs, int[] cpus, int iCpu, int procVal, int mTime) {
         int rv;
         procs = new LinkedList<>(procs);
-        originalCpus[iCpu] += procVal;
+        cpus[iCpu] += procVal;
 
         if (procs.isEmpty()) {
-            rv = maxTime(originalCpus);
+            rv = maxTime(cpus);
             if (mTime != NOT_SET && rv > mTime) {
                 rv = mTime;
             }
@@ -24,14 +24,14 @@ public class Exhaustive extends Processor {
             for (int procNumber = 0; procNumber < nProc; procNumber++) {
                 int tProcVal = procs.remove(procNumber);
 
-                for (int cpuNumber = 0; cpuNumber < originalCpus.length; cpuNumber++) {
-                    mTime = internalProcess(procs, originalCpus, cpuNumber, tProcVal, mTime);
+                for (int cpuNumber = 0; cpuNumber < cpus.length; cpuNumber++) {
+                    mTime = internalProcess(procs, cpus, cpuNumber, tProcVal, mTime);
                 }
                 procs.add(procNumber, tProcVal);
             }
             rv = mTime;
         }
-        originalCpus[iCpu] -= procVal;
+        cpus[iCpu] -= procVal;
         return rv;
     }
 }
