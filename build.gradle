@@ -1,0 +1,14 @@
+plugins {
+  id 'java' // or 'groovy' Must be explicitly applied
+  id 'com.github.johnrengelman.shadow' version '1.2.0'
+}
+ 
+dependencies {
+    compile 'org.bitbucket.fwilhelm:org.jenetics:3.0.0'
+}
+ 
+jar {
+    manifest {
+        attributes 'Main-Class': 'blog.shadow.HelloWorld'
+    }
+}
