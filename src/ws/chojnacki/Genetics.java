@@ -37,7 +37,7 @@ final class FF implements Function<Genotype<EnumGene<Integer>>, Double> {
             cnt++;
 
         }
-        int maxTime = Main.maxTime(results);
+        int maxTime = Genetics.maxTime(results);
         return (double) (maxTime);
     }
 }

@@ -1,9 +1,8 @@
 package ws.chojnacki;
 
-import java.util.Collections;
 import java.util.List;
 
-public class Greedy extends Processor{
+public class Greedy extends Processor {
     int findLowestUsedCpu(int[] cpus) {
         int low_i = 0;
         for (int i = 0; i < cpus.length; i++) {
