@@ -1,8 +1,11 @@
 package ws.chojnacki;
 
+import com.google.common.base.Stopwatch;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public abstract class Processor {
@@ -25,4 +28,12 @@ public abstract class Processor {
     }
 
     abstract Integer process(List<Integer> processes, int nCpus);
+
+    void toCSV(List<Integer> processes, int nCpus) {
+        int size = processes.size();
+        Stopwatch timer = Stopwatch.createStarted();
+        Integer result = process(processes, nCpus);
+        timer.stop();
+        System.out.println(String.format("%d,%d,%d,%d", nCpus, size, result, timer.elapsed(TimeUnit.MICROSECONDS)));
+    }
 }

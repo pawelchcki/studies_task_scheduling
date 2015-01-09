@@ -41,13 +41,6 @@ public class Main {
 //            String[] tmp = {"ws.chojnacki.Exhaustive", "./lpt.txt"};
             String[] tmp = {"ws.chojnacki.ExhaustiveThreaded", "./lpt.txt"};
             args = tmp;
-            for (int i = 1; i < 100; i++) {
-                Helper.generateSamples(3, i, 2, 11);
-            }
-
-            for (int i = 10; i < 1001; i += 5) {
-                Helper.generateSamples(10, i, 5, 25);
-            }
             if (args.length > 1) {
                 String klassName = args[0];
                 Processor processor = (Processor) ClassLoader.getSystemClassLoader().loadClass(klassName).newInstance();
@@ -55,14 +48,8 @@ public class Main {
                 x.readFile(args[1]);
 
 
-                Stopwatch timer = Stopwatch.createStarted();
-                System.err.println(processor.process(x.processes, x.nCpus));
-                timer.stop();
-                System.err.println(timer.elapsed(TimeUnit.MICROSECONDS));
+                processor.toCSV(x.processes, x.nCpus);
 
-                for (String arg : args) {
-                    System.err.println(arg);
-                }
             } else {
                 System.err.println("too few vs");
             }
